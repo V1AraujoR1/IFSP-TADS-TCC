@@ -1,0 +1,35 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<PreferenceCategory app:title="@string/notifications_header">
+
+		<SwitchPreferenceCompat
+			app:key="notifyPositiveReadingFromMonitoring"
+			app:title="@string/notifyPositiveReadingFromMonitoring_title"
+			app:defaultValue="true" />
+
+		<SwitchPreferenceCompat
+			app:key="notifyLowBatteryLevel"
+			app:title="@string/notifyLowBatteryLevel_title"
+			app:defaultValue="true" />
+
+		<MultiSelectListPreference
+			app:key="notificationTypes"
+			app:title="@string/notificationTypes_title"
+			app:defaultValue="@array/notificationTypes_defaultValue"
+			app:entries="@array/notificationTypes_entries"
+			app:entryValues="@array/notificationTypes_entryValues" />
+
+		<EditTextPreference
+			app:key="notificationMessage"
+			app:title="@string/notificationMessage_title"
+			app:defaultValue="@string/notificationMessage"
+			app:useSimpleSummaryProvider="true" />
+
+		<Preference
+			app:key="notificationRecipients"
+			app:title="@string/notificationRecipients_title"
+			app:summary="@string/notificationRecipients_summary"/>
+
+	</PreferenceCategory>
+
+</PreferenceScreen>

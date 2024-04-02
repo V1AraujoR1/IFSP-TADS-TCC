@@ -7,11 +7,11 @@ import android.widget.Toast;
 import android.telephony.SmsManager;
 
 import com.example.tcc.R;
-import com.example.tcc.ui.settings.SettingsViewModel;
+import com.example.tcc.ui.settings.NotificationRecipientsViewModel;
 
 public class TimeElapsed {
 	private final Context context;
-	private final SettingsViewModel settingsViewModel;
+	private final NotificationRecipientsViewModel notificationRecipientsViewModel;
 	private final Handler handler;
 	private final Runnable runnable;
 	private final long milliseconds;
@@ -20,7 +20,7 @@ public class TimeElapsed {
 
 	public TimeElapsed(Context context) {
 		this.context = context;
-		this.settingsViewModel = new SettingsViewModel(getContext());
+		this.notificationRecipientsViewModel = new NotificationRecipientsViewModel(getContext());
 		this.handler = new Handler(Looper.getMainLooper());
 		this.runnable = new Runnable() {
 			@Override
@@ -44,9 +44,9 @@ public class TimeElapsed {
 		try {
 			Toast.makeText(getContext(), getContext().getString(R.string.temporaryMessageForDemonstrationPurposes), Toast.LENGTH_LONG).show();
 
-			if ((settingsViewModel.getPhoneNumbers() != null) && (!settingsViewModel.getPhoneNumbers().isEmpty())) {
+			if ((notificationRecipientsViewModel.getPhoneNumbers() != null) && (!notificationRecipientsViewModel.getPhoneNumbers().isEmpty())) {
 				SmsManager smsManager = SmsManager.getDefault();
-				smsManager.sendTextMessage(settingsViewModel.getPhoneNumbers().get(0), null, "SMS de teste para o projeto do TCC.", null, null);
+				smsManager.sendTextMessage(notificationRecipientsViewModel.getPhoneNumbers().get(0), null, "SMS de teste para o projeto do TCC.", null, null);
 			}
 		} catch (Exception e) {
 			String testingMessage = e.getMessage();

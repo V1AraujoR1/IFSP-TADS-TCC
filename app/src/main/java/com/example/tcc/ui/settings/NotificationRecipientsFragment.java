@@ -3,69 +3,32 @@ package com.example.tcc.ui.settings;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.tcc.R;
-//import com.example.tcc.databinding.FragmentSettingsBinding;
+import com.example.tcc.databinding.FragmentNotificationRecipientsBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class SettingsFragment extends PreferenceFragmentCompat {
+public class NotificationRecipientsFragment extends Fragment {
 
-	@Override
-	public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-		setPreferencesFromResource(R.xml.root_preferences, rootKey);
-
-		// Find the preference item by its key
-		Preference phoneNumbersPreference = findPreference("notificationRecipients");
-
-		// Set an OnPreferenceClickListener to handle the button click event
-		phoneNumbersPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				// Navigate to PhoneNumberInputFragment
-				NavHostFragment.findNavController(SettingsFragment.this).navigate(R.id.action_settingsFragment_to_notificationRecipientsFragment);
-				return true;
-			}
-		});
-	}
-
-}
-
-/*
-
-public class SettingsFragment extends PreferenceFragmentCompat {
-
-	private FragmentSettingsBinding binding;
+	private FragmentNotificationRecipientsBinding binding;
 	private RecyclerView recyclerView;
 	private Context fragmentContext;
 	private NotificationRecipientsAdapter adapter;
 
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		binding = FragmentSettingsBinding.inflate(inflater, container, false);
+		binding = FragmentNotificationRecipientsBinding.inflate(inflater, container, false);
 		View root = binding.getRoot();
 
 		return root;
-	}
-
-	@Override
-	public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-		setPreferencesFromResource(R.xml.root_preferences, rootKey);
 	}
 
 	@Override
@@ -107,9 +70,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				String number = userNo.getText().toString();
-				adapter.getSettingsViewModel().getPhoneNumbers().add(number);
+				adapter.getNotificationRecipientsViewModel().getPhoneNumbers().add(number);
 				adapter.notifyDataSetChanged();
-				adapter.getSettingsViewModel().saveSettings();
+				adapter.getNotificationRecipientsViewModel().saveSettings();
 				dialog.dismiss();
 			}
 		});
@@ -124,5 +87,3 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 		addDialog.create().show();
 	}
 }
-
-*/

@@ -17,6 +17,7 @@
 			android:layout_gravity="center"
 			android:background="@color/background"
 			android:elevation="15dp"
+			android:fontFamily="@font/montserrat"
 			android:gravity="center"
 			android:padding="10dp"
 			android:text="Add the User Information"

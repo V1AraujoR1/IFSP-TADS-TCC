@@ -6,11 +6,11 @@ import android.content.SharedPreferences;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class SettingsViewModel {
+public class NotificationRecipientsViewModel {
 	private Context context;
 	private ArrayList<String> phoneNumbers;
 
-	public SettingsViewModel(Context context) {
+	public NotificationRecipientsViewModel(Context context) {
 		this.context = context;
 		this.phoneNumbers = new ArrayList<String>();
 

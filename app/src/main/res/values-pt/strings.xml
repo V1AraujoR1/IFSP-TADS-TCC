@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">TCC</string>
+	<string name="app_name">BabyAssist</string>
 	<string name="tglMonitoringOn">Desativar Monitoramento</string>
 	<string name="tglMonitoringOff">Ativar Monitoramento</string>
 	<string name="lblDecibelMessage">%1$s dB</string>
@@ -13,6 +13,7 @@
 
 	<string name="menu_home">Início</string>
 	<string name="menu_settings">Configurações</string>
+	<string name="menu_recipients">Destinatários</string>
 
 	<string name="cancel">Cancelar</string>
 	<string name="confirm">Confirmar</string>
@@ -21,4 +22,13 @@
 
 	<string name="delete_confirmation_title">Deletar</string>
 	<string name="delete_confirmation_message">Tem certeza de que deseja excluir a informação?</string>
+
+	<string name="notifications_header">Notificações</string>
+	<string name="notifyPositiveReadingFromMonitoring_title">Leitura positiva do monitoramento</string>
+	<string name="notifyLowBatteryLevel_title">Nível de bateria baixo</string>
+	<string name="notificationTypes_title">Formato de notificação</string>
+	<string name="notificationMessage_title">Mensagem de notificação</string>
+	<string name="notificationMessage">ALERTA! O app BabyAssist detectou uma ocorrência durante o monitoramento.</string>
+	<string name="notificationRecipients_title">Destinatários de notificação</string>
+	<string name="notificationRecipients_summary">Gerencie números de telefone</string>
 </resources>
