@@ -13,4 +13,12 @@
 
 	<string name="menu_home">Início</string>
 	<string name="menu_settings">Configurações</string>
+
+	<string name="cancel">Cancelar</string>
+	<string name="confirm">Confirmar</string>
+	<string name="no">Não</string>
+	<string name="yes">Sim</string>
+
+	<string name="delete_confirmation_title">Deletar</string>
+	<string name="delete_confirmation_message">Tem certeza de que deseja excluir a informação?</string>
 </resources>

@@ -16,12 +16,13 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.tcc.R;
-import com.example.tcc.TimeElapsed;
+import com.example.tcc.util.Monitoring;
+import com.example.tcc.util.TimeElapsed;
 import com.example.tcc.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
@@ -30,6 +31,7 @@ public class HomeFragment extends Fragment {
 	private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
 	private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
 	private static final int RECORD_AUDIO_REQUEST_CODE = 123;
+	private static final int SEND_SMS_REQUEST_CODE = 124;
 	private static final long DECIBEL_THRESHOLD = 60;
 
 	private AudioRecord gcAudioRecord;
@@ -40,20 +42,30 @@ public class HomeFragment extends Fragment {
 	private ToggleButton toggleButton;
 	private Context appContext;
 
+	private Monitoring monitoring;
+
 	public View onCreateView(@NonNull LayoutInflater inflater,
 	                         ViewGroup container, Bundle savedInstanceState) {
-		HomeViewModel homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 		binding = FragmentHomeBinding.inflate(inflater, container, false);
 		View root = binding.getRoot();
 
-		toggleButton = root.findViewById(R.id.tglMonitoring);
+		return root;
+	}
+
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+
+		toggleButton = view.findViewById(R.id.tglMonitoring);
+
+		monitoring = new Monitoring(view, requireContext().getApplicationContext(), getActivity(), R.id.lblDecibel);
 
 		toggleButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				ToggleButton tglMonitoring = (ToggleButton) v;
 
-				if (tglMonitoring.isChecked()) {
+				/*if (tglMonitoring.isChecked()) {
 					boolean bSuccessfulStart = startMonitoring();
 
 					if (!bSuccessfulStart) {
@@ -61,11 +73,19 @@ public class HomeFragment extends Fragment {
 					}
 				} else {
 					stopMonitoring();
+				}*/
+
+				if (tglMonitoring.isChecked()) {
+					boolean bSuccessfulStart = monitoring.start();
+
+					if (!bSuccessfulStart) {
+						tglMonitoring.setChecked(false);
+					}
+				} else {
+					monitoring.stop();
 				}
 			}
 		});
-
-		return root;
 	}
 
 	@Override
@@ -79,6 +99,11 @@ public class HomeFragment extends Fragment {
 
 		if (ActivityCompat.checkSelfPermission(appContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
 			ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.RECORD_AUDIO}, RECORD_AUDIO_REQUEST_CODE);
+			return false;
+		}
+
+		if (ActivityCompat.checkSelfPermission(appContext, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.SEND_SMS}, SEND_SMS_REQUEST_CODE);
 			return false;
 		}
 
