@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">TCC</string>
+	<string name="tglMonitoringOn">Desativar Monitoramento</string>
+	<string name="tglMonitoringOff">Ativar Monitoramento</string>
+	<string name="lblDecibelMessage">%1$s dB</string>
+	<string name="temporaryMessageForDemonstrationPurposes">O microfone esteve captando um som muito alto nos últimos três segundos.</string>
+	<string name="title_activity_main">MainActivity</string>
+
+	<string name="nav_header_title">Android Studio</string>
+	<string name="nav_header_subtitle">android.studio@android.com</string>
+	<string name="nav_header_desc">Navigation header</string>
+
+	<string name="menu_home">Início</string>
+	<string name="menu_settings">Configurações</string>
+</resources>
