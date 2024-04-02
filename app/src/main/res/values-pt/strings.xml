@@ -1,34 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">BabyAssist</string>
+	<!-- Monitoring Service -->
+	<string name="monitoringService_notification_channelName">Serviço de Monitoramento</string>
+	<string name="monitoringService_notification_contentTitle">Monitoramento do BabyAssist</string>
+	<string name="monitoringService_notification_contentText">%1$s dB</string>
+
+	<!-- Pending to review -->
 	<string name="tglMonitoringOn">Desativar Monitoramento</string>
 	<string name="tglMonitoringOff">Ativar Monitoramento</string>
 	<string name="lblDecibelMessage">%1$s dB</string>
-	<string name="temporaryMessageForDemonstrationPurposes">O microfone esteve captando um som muito alto nos últimos três segundos.</string>
+	<string name="temporaryMessageForDemonstrationPurposes">Leitura positiva</string>
 	<string name="title_activity_main">MainActivity</string>
-
-	<string name="nav_header_title">Android Studio</string>
-	<string name="nav_header_subtitle">android.studio@android.com</string>
-	<string name="nav_header_desc">Navigation header</string>
-
 	<string name="menu_home">Início</string>
 	<string name="menu_settings">Configurações</string>
 	<string name="menu_recipients">Destinatários</string>
-
 	<string name="cancel">Cancelar</string>
 	<string name="confirm">Confirmar</string>
+	<string name="edit">Editar</string>
+	<string name="delete">Deletar</string>
 	<string name="no">Não</string>
 	<string name="yes">Sim</string>
-
+	<string name="hours">Horas</string>
+	<string name="minutes">Minutos</string>
+	<string name="seconds">Segundos</string>
 	<string name="delete_confirmation_title">Deletar</string>
 	<string name="delete_confirmation_message">Tem certeza de que deseja excluir a informação?</string>
+	<string name="preference_dialog_notificationRecipients_title">Adicionar número de telefone</string>
+	<string name="preference_dialog_notificationRecipients_hint">Número de telefone</string>
 
-	<string name="notifications_header">Notificações</string>
-	<string name="notifyPositiveReadingFromMonitoring_title">Leitura positiva do monitoramento</string>
-	<string name="notifyLowBatteryLevel_title">Nível de bateria baixo</string>
-	<string name="notificationTypes_title">Formato de notificação</string>
-	<string name="notificationMessage_title">Mensagem de notificação</string>
-	<string name="notificationMessage">ALERTA! O app BabyAssist detectou uma ocorrência durante o monitoramento.</string>
-	<string name="notificationRecipients_title">Destinatários de notificação</string>
-	<string name="notificationRecipients_summary">Gerencie números de telefone</string>
+	<!-- Preferences -->
+	<string name="preferenceCategory_title_monitoring">Monitoramento</string>
+	<string name="preferenceCategory_title_notifications">Notificações</string>
+
+	<string name="preference_defaultValue_lowBatteryLevelNotificationMessage">ALERTA! Nível de bateria baixo em seu dispositivo que está executando a tarefa de monitoramento do BabyAssist.</string>
+	<string name="preference_defaultValue_notificationMessage">ALERTA! O app BabyAssist detectou uma ocorrência durante o monitoramento.</string>
+
+	<string name="preference_summary_timeLimitForMonitoring">O tempo limite sobre o qual o monitoramento deve ocorrer. Ao atingir a marca de tempo definida aqui, o monitoramento é automaticamente desligado</string>
+	<string name="preference_summary_decibelsForPositiveReading">O volume em decibéis que o microfone precisa capturar para considerar uma leitura positiva durante o monitoramento</string>
+	<string name="preference_summary_timeForPositiveReading">O comprimento de tempo necessário para a leitura positiva ocorrer para notificar os destinatários</string>
+	<string name="preference_summary_notificationRecipients">Gerencie números de telefone</string>
+
+	<string name="preference_title_timeLimitForMonitoring">Tempo limite para monitoramento</string>
+	<string name="preference_title_decibelsForPositiveReading">Decibéis para leitura positiva</string>
+	<string name="preference_title_timeForPositiveReading">Tempo para leitura positiva</string>
+	<string name="preference_title_notifyPositiveReadingFromMonitoring">Leitura positiva do monitoramento</string>
+	<string name="preference_title_notifyLowBatteryLevel">Nível de bateria baixo</string>
+	<string name="preference_title_notificationTypes">Formato de notificação</string>
+	<string name="preference_title_notificationMessage">Mensagem de notificação</string>
+	<string name="preference_title_notificationRecipients">Destinatários de notificação</string>
 </resources>

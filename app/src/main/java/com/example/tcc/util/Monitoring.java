@@ -1,133 +1,131 @@
 package com.example.tcc.util;
 
-import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.MediaRecorder;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.os.Handler;
 import android.os.Looper;
-import android.os.Process;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.PowerManager;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
-import androidx.core.app.ActivityCompat;
+import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import com.example.tcc.R;
+import com.example.tcc.service.MonitoringService;
 
 public class Monitoring {
 
-	private static final int SAMPLE_RATE = 44100;
-	private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
-	private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
-	private static final int RECORD_AUDIO_REQUEST_CODE = 123;
-	private static final int SEND_SMS_REQUEST_CODE = 124;
-	private static final long DECIBEL_THRESHOLD = 60;
-
+	private final View view;
 	private final Context context;
 	private final Activity activity;
 	private final @IdRes int textViewId;
+	private final Notification notification;
+	private final PowerManager.WakeLock wakeLock;
 
-	private View view;
 	private TextView textView;
-	private AudioRecord audioRecord;
-	private Thread thread;
+
+	private final Handler textViewHandler = new Handler(Looper.getMainLooper()) {
+		@Override
+		public void handleMessage(@NonNull Message message) {
+			if ((textView == null) && (view != null)) {
+				textView = view.findViewById(textViewId);
+			}
+
+			if ((textView != null) && (message.obj != null)) {
+				textView.setText(String.valueOf(message.obj));
+			}
+		}
+	};
+
+	private BroadcastReceiver batteryReceiver;
+	private boolean isBatteryReceiverRegistered = false;
 
 	public Monitoring(View view, Context context, Activity activity, @IdRes int textViewId) {
 		this.view = view;
 		this.context = context;
 		this.activity = activity;
 		this.textViewId = textViewId;
+		this.notification = new Notification(getContext());
+
+		PowerManager powerManager = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
+		this.wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "TCC:MonitoringWakeLock");
 	}
 
-	public boolean start() {
-		if (textView == null) {
-			textView = view.findViewById(this.textViewId);
-		}
+	public Context getContext() {
+		return context;
+	}
 
-		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(activity, new String[] {Manifest.permission.RECORD_AUDIO}, RECORD_AUDIO_REQUEST_CODE);
-			return false;
-		}
+	public Activity getActivity() {
+		return activity;
+	}
 
-		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(activity, new String[] {Manifest.permission.SEND_SMS}, SEND_SMS_REQUEST_CODE);
-			return false;
-		}
+	public void start() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+		int timeout = sharedPreferences.getInt(getContext().getString(R.string.preference_key_timeLimitForMonitoring), getContext().getResources().getInteger(R.integer.preference_defaultValue_timeLimitForMonitoring));
 
-		int minBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
+		wakeLock.acquire(timeout);
 
-		audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, minBufferSize);
-		audioRecord.startRecording();
-
-		thread = new Thread(new Runnable() {
+		batteryReceiver = new BroadcastReceiver() {
 			@Override
-			public void run() {
-				android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
-
-				Looper.prepare();
-				TimeElapsed timeElapsed = new TimeElapsed(context);
-				short[] buffer = new short[minBufferSize];
-
-				try {
-					while (true) {
-						Thread.sleep(200);
-
-						int numSamplesRead = audioRecord.read(buffer, 0, buffer.length);
-						double sumOfSquares = 0;
-
-						for (int i = 0; i < numSamplesRead; i++) {
-							sumOfSquares += buffer[i] * buffer[i];
-						}
-
-						double amplitude = sumOfSquares / (double) numSamplesRead;
-						long decibel = Math.round(20 * Math.log10(Math.sqrt(amplitude)));
-
-						if (textView != null) {
-							textView.post(new Runnable() {
-								@Override
-								public void run() {
-									textView.setText(context.getString(R.string.lblDecibelMessage, String.valueOf(decibel)));
-								}
-							});
-						}
-
-						if (decibel > DECIBEL_THRESHOLD) {
-							timeElapsed.start();
-						} else {
-							timeElapsed.stop();
-						}
-					}
-				} catch (Exception e) {
-					timeElapsed.stop();
-
-					if ((audioRecord != null) && (audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING)) {
-						audioRecord.stop();
-						audioRecord.release();
-					}
-
-					if (textView != null) {
-						textView.post(new Runnable() {
-							@Override
-							public void run() {
-								textView.setText("");
-							}
-						});
-					}
-				}
+			public void onReceive(Context context, Intent intent) {
+				notification.notifyLowBatteryLevel();
 			}
-		});
+		};
 
-		thread.start();
-		return true;
+		getActivity().registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
+		isBatteryReceiverRegistered = true;
+
+		Intent monitoringServiceIntent = new Intent(getContext(), MonitoringService.class);
+
+		monitoringServiceIntent.setAction(MonitoringService.ACTION_START);
+		monitoringServiceIntent.putExtra("textViewMessenger", new Messenger(textViewHandler));
+		monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_decibelsForPositiveReading), getContext().getResources().getInteger(R.integer.preference_defaultValue_decibelsForPositiveReading));
+		monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_timeForPositiveReading), getContext().getResources().getInteger(R.integer.preference_defaultValue_timeForPositiveReading));
+
+		getContext().startForegroundService(monitoringServiceIntent);
 	}
 
 	public void stop() {
-		if (thread != null) {
-			thread.interrupt();
+		if (isForegroundServiceRunning()) {
+			Intent monitoringServiceIntent = new Intent(getContext(), MonitoringService.class);
+
+			monitoringServiceIntent.setAction(MonitoringService.ACTION_STOP);
+			monitoringServiceIntent.putExtra("textViewMessenger", new Messenger(textViewHandler));
+			monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_decibelsForPositiveReading), getContext().getResources().getInteger(R.integer.preference_defaultValue_decibelsForPositiveReading));
+			monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_timeForPositiveReading), getContext().getResources().getInteger(R.integer.preference_defaultValue_timeForPositiveReading));
+
+			getContext().startForegroundService(monitoringServiceIntent);
 		}
+
+		if (wakeLock.isHeld()) {
+			wakeLock.release();
+		}
+
+		if (isBatteryReceiverRegistered) {
+			getActivity().unregisterReceiver(batteryReceiver);
+			isBatteryReceiverRegistered = false;
+		}
+	}
+
+	private boolean isForegroundServiceRunning() {
+		ActivityManager activityManager = (ActivityManager) getContext().getSystemService(Context.ACTIVITY_SERVICE);
+
+		for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+			if (MonitoringService.class.getName().equals(service.service.getClassName())) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

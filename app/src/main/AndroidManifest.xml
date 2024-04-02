@@ -3,14 +3,21 @@
 
 	<uses-feature
 		android:name="android.hardware.telephony"
-		android:required="false" />
+		android:required="true" />
+	<uses-feature
+		android:name="android.hardware.microphone"
+		android:required="true" />
 
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 	<uses-permission android:name="android.permission.RECORD_AUDIO" />
 	<uses-permission android:name="android.permission.SEND_SMS" />
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
 
 	<application
+		android:name=".Application"
 		android:icon="@mipmap/ic_babyassist"
-		android:label="@string/app_name"
+		android:label="@string/application_label"
 		android:roundIcon="@mipmap/ic_babyassist_round"
 		android:theme="@style/Theme.TCC">
 
@@ -26,5 +33,11 @@
 		<meta-data
 			android:name="preloaded_fonts"
 			android:resource="@array/preloaded_fonts" />
+
+		<service
+			android:name="com.example.tcc.service.MonitoringService"
+			android:enabled="true"
+			android:exported="true"
+			android:foregroundServiceType="microphone" />
 	</application>
 </manifest>

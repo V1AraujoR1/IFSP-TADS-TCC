@@ -15,8 +15,9 @@
 		android:id="@+id/settingsFragment"
 		android:name="com.example.tcc.ui.settings.SettingsFragment"
 		android:label="@string/menu_settings">
-		<action android:id="@+id/action_settingsFragment_to_notificationRecipientsFragment"
-			app:destination="@id/notificationRecipientsFragment"/>
+		<action
+			android:id="@+id/action_settingsFragment_to_notificationRecipientsFragment"
+			app:destination="@id/notificationRecipientsFragment" />
 	</fragment>
 
 	<fragment

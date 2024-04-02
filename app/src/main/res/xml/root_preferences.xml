@@ -1,34 +1,71 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-	<PreferenceCategory app:title="@string/notifications_header">
+	<PreferenceCategory
+		app:iconSpaceReserved="false"
+		app:title="@string/preferenceCategory_title_monitoring">
+
+		<com.example.tcc.ui.settings.TimePickerDialogPreference
+			app:defaultValue="@integer/preference_defaultValue_timeLimitForMonitoring"
+			app:dialogTitle="@string/preference_title_timeLimitForMonitoring"
+			app:iconSpaceReserved="false"
+			app:key="@string/preference_key_timeLimitForMonitoring"
+			app:summary="@string/preference_summary_timeLimitForMonitoring"
+			app:title="@string/preference_title_timeLimitForMonitoring" />
+
+		<com.example.tcc.ui.settings.NumberPickerDialogPreference
+			app:defaultValue="@integer/preference_defaultValue_decibelsForPositiveReading"
+			app:dialogTitle="@string/preference_title_decibelsForPositiveReading"
+			app:iconSpaceReserved="false"
+			app:key="@string/preference_key_decibelsForPositiveReading"
+			app:summary="@string/preference_summary_decibelsForPositiveReading"
+			app:title="@string/preference_title_decibelsForPositiveReading" />
+
+		<com.example.tcc.ui.settings.TimePickerDialogPreference
+			app:defaultValue="@integer/preference_defaultValue_timeForPositiveReading"
+			app:dialogTitle="@string/preference_title_timeForPositiveReading"
+			app:iconSpaceReserved="false"
+			app:key="@string/preference_key_timeForPositiveReading"
+			app:summary="@string/preference_summary_timeForPositiveReading"
+			app:title="@string/preference_title_timeForPositiveReading" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+		app:iconSpaceReserved="false"
+		app:title="@string/preferenceCategory_title_notifications">
 
 		<SwitchPreferenceCompat
-			app:key="notifyPositiveReadingFromMonitoring"
-			app:title="@string/notifyPositiveReadingFromMonitoring_title"
-			app:defaultValue="true" />
+			app:defaultValue="@bool/preference_defaultValue_notifyPositiveReadingFromMonitoring"
+			app:iconSpaceReserved="false"
+			app:key="@string/preference_key_notifyPositiveReadingFromMonitoring"
+			app:title="@string/preference_title_notifyPositiveReadingFromMonitoring" />
 
 		<SwitchPreferenceCompat
-			app:key="notifyLowBatteryLevel"
-			app:title="@string/notifyLowBatteryLevel_title"
-			app:defaultValue="true" />
+			app:defaultValue="@bool/preference_defaultValue_notifyLowBatteryLevel"
+			app:iconSpaceReserved="false"
+			app:key="@string/preference_key_notifyLowBatteryLevel"
+			app:title="@string/preference_title_notifyLowBatteryLevel" />
 
 		<MultiSelectListPreference
-			app:key="notificationTypes"
-			app:title="@string/notificationTypes_title"
-			app:defaultValue="@array/notificationTypes_defaultValue"
-			app:entries="@array/notificationTypes_entries"
-			app:entryValues="@array/notificationTypes_entryValues" />
+			app:defaultValue="@array/preference_defaultValue_notificationTypes"
+			app:entries="@array/preference_entries_notificationTypes"
+			app:entryValues="@array/preference_entryValues_notificationTypes"
+			app:iconSpaceReserved="false"
+			app:key="@string/preference_key_notificationTypes"
+			app:title="@string/preference_title_notificationTypes" />
 
 		<EditTextPreference
-			app:key="notificationMessage"
-			app:title="@string/notificationMessage_title"
-			app:defaultValue="@string/notificationMessage"
+			app:defaultValue="@string/preference_defaultValue_notificationMessage"
+			app:iconSpaceReserved="false"
+			app:key="@string/preference_key_notificationMessage"
+			app:title="@string/preference_title_notificationMessage"
 			app:useSimpleSummaryProvider="true" />
 
 		<Preference
-			app:key="notificationRecipients"
-			app:title="@string/notificationRecipients_title"
-			app:summary="@string/notificationRecipients_summary"/>
+			app:iconSpaceReserved="false"
+			app:key="@string/preference_key_notificationRecipients"
+			app:summary="@string/preference_summary_notificationRecipients"
+			app:title="@string/preference_title_notificationRecipients" />
 
 	</PreferenceCategory>
 
