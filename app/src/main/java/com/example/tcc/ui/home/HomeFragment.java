@@ -1,9 +1,12 @@
 package com.example.tcc.ui.home;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +29,8 @@ public class HomeFragment extends Fragment {
 	private FragmentHomeBinding binding;
 	private Monitoring monitoring;
 	private ToggleButton toggleButton;
+	private Handler handler;
+	private Runnable runnable;
 
 	private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
 		if (isGranted) {
@@ -42,10 +47,22 @@ public class HomeFragment extends Fragment {
 	}
 
 	@Override
+	public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+		super.onViewStateRestored(savedInstanceState);
+		ensureButtonState();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		ensureButtonState();
+	}
+
+	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		monitoring = new Monitoring(view, requireContext().getApplicationContext(), getActivity(), R.id.lblDecibel);
+		monitoring = new Monitoring(requireContext().getApplicationContext(), getActivity());
 		toggleButton = view.findViewById(R.id.tglMonitoring);
 
 		toggleButton.setOnClickListener((v) -> {
@@ -55,6 +72,14 @@ public class HomeFragment extends Fragment {
 				stopMonitoring();
 			}
 		});
+
+		ensureButtonState();
+	}
+
+	@Override
+	public void onAttach(@NonNull Context context) {
+		super.onAttach(context);
+		ensureButtonState();
 	}
 
 	@Override
@@ -104,5 +129,36 @@ public class HomeFragment extends Fragment {
 	private void stopMonitoring() {
 		toggleButton.setChecked(false);
 		monitoring.stop();
+	}
+
+	private void ensureButtonState() {
+		if ((handler != null) && (runnable != null)) {
+			return;
+		}
+
+		handler = new Handler(Looper.getMainLooper());
+		runnable = new Runnable() {
+			@Override
+			public void run() {
+				updateButtonState();
+				handler.postDelayed(this, 1000);
+			}
+		};
+
+		handler.post(runnable);
+	}
+
+	private void updateButtonState() {
+		if ((monitoring == null) || (toggleButton == null)) {
+			return;
+		}
+
+		if ((toggleButton.isChecked()) && (!monitoring.isForegroundServiceRunning())) {
+			toggleButton.setChecked(false);
+		}
+
+		if ((!toggleButton.isChecked()) && (monitoring.isForegroundServiceRunning())) {
+			toggleButton.setChecked(true);
+		}
 	}
 }

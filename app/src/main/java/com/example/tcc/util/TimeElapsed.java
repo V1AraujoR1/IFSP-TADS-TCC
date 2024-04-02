@@ -22,7 +22,6 @@ public class TimeElapsed {
 		this.notification = new Notification(getContext());
 		this.handler = new Handler(Looper.getMainLooper());
 		this.runnable = () -> {
-			Toast.makeText(getContext(), getContext().getString(R.string.temporaryMessageForDemonstrationPurposes), Toast.LENGTH_LONG).show();
 			notification.notifyPositiveReadingFromMonitoring();
 			isStarted = false;
 		};

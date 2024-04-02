@@ -13,9 +13,7 @@ import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
+import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -38,9 +36,10 @@ public class MonitoringService extends Service {
 	private final int minBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
 	private TimeElapsed timeElapsed;
 	private AudioRecord audioRecord;
-	private Messenger textViewMessenger;
 	private long decibelThreshold;
 	private long timeForPositiveReading;
+	private long timeLimitForMonitoring;
+	private final long startTime = SystemClock.elapsedRealtime();
 	private Handler handler;
 	private final Runnable runnable = new Runnable() {
 		@Override
@@ -62,14 +61,11 @@ public class MonitoringService extends Service {
 				timeElapsed.stop();
 			}
 
-			Message message = Message.obtain();
-			message.obj = MonitoringService.this.getString(R.string.lblDecibelMessage, String.valueOf(decibel));
-
 			updateNotification(decibel);
 
-			try {
-				textViewMessenger.send(message);
-			} catch (RemoteException ignored) {
+			if (getElapsedTime() >= timeLimitForMonitoring) {
+				stopMonitoringService();
+				return;
 			}
 
 			handler.postDelayed(this, MILLISECONDS);
@@ -78,9 +74,9 @@ public class MonitoringService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		textViewMessenger = intent.getParcelableExtra("textViewMessenger", Messenger.class);
 		decibelThreshold = intent.getIntExtra(getString(R.string.preference_key_decibelsForPositiveReading), MonitoringService.this.getResources().getInteger(R.integer.preference_defaultValue_decibelsForPositiveReading));
 		timeForPositiveReading = intent.getIntExtra(getString(R.string.preference_key_timeForPositiveReading), MonitoringService.this.getResources().getInteger(R.integer.preference_defaultValue_timeForPositiveReading));
+		timeLimitForMonitoring = intent.getIntExtra(getString(R.string.preference_key_timeLimitForMonitoring), MonitoringService.this.getResources().getInteger(R.integer.preference_defaultValue_timeLimitForMonitoring));
 
 		if (Objects.equals(intent.getAction(), ACTION_STOP)) {
 			stopMonitoringService();
@@ -142,20 +138,16 @@ public class MonitoringService extends Service {
 			audioRecord.release();
 		}
 
-		Message message = Message.obtain();
-		message.obj = "";
-
-		try {
-			textViewMessenger.send(message);
-		} catch (Exception ignored) {
-		}
-
 		if (handler != null) {
 			handler.removeCallbacks(runnable);
 		}
 
 		stopForeground(STOP_FOREGROUND_REMOVE);
 		stopSelf();
+	}
+
+	private long getElapsedTime() {
+		return SystemClock.elapsedRealtime() - startTime;
 	}
 
 }

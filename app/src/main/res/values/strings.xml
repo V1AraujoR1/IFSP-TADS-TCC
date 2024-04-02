@@ -12,8 +12,6 @@
 	<!-- Pending to review -->
 	<string name="tglMonitoringOn">Deactivate Monitoring</string>
 	<string name="tglMonitoringOff">Activate Monitoring</string>
-	<string name="lblDecibelMessage">%1$s dB</string>
-	<string name="temporaryMessageForDemonstrationPurposes">Positive reading</string>
 	<string name="title_activity_main">MainActivity</string>
 	<string name="menu_home">Home</string>
 	<string name="menu_settings">Settings</string>

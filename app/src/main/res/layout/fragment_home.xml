@@ -21,13 +21,6 @@
 		android:orientation="vertical"
 		app:layout_constraintGuide_percent="0.5" />
 
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/guideline_horizontal_lblDecibel"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintGuide_percent="0.6" />
-
 	<ToggleButton
 		android:id="@+id/tglMonitoring"
 		android:layout_width="wrap_content"
@@ -44,14 +37,5 @@
 		app:layout_constraintEnd_toEndOf="@id/guideline_vertical_center"
 		app:layout_constraintStart_toStartOf="@id/guideline_vertical_center"
 		app:layout_constraintTop_toTopOf="@id/guideline_horizontal_center" />
-
-	<TextView
-		android:id="@+id/lblDecibel"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal_lblDecibel"
-		app:layout_constraintEnd_toEndOf="@id/guideline_vertical_center"
-		app:layout_constraintStart_toStartOf="@id/guideline_vertical_center"
-		app:layout_constraintTop_toTopOf="@id/guideline_horizontal_lblDecibel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

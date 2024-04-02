@@ -7,16 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.os.Messenger;
 import android.os.PowerManager;
-import android.view.View;
-import android.widget.TextView;
-
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.example.tcc.R;
@@ -24,36 +15,17 @@ import com.example.tcc.service.MonitoringService;
 
 public class Monitoring {
 
-	private final View view;
 	private final Context context;
 	private final Activity activity;
-	private final @IdRes int textViewId;
 	private final Notification notification;
 	private final PowerManager.WakeLock wakeLock;
-
-	private TextView textView;
-
-	private final Handler textViewHandler = new Handler(Looper.getMainLooper()) {
-		@Override
-		public void handleMessage(@NonNull Message message) {
-			if ((textView == null) && (view != null)) {
-				textView = view.findViewById(textViewId);
-			}
-
-			if ((textView != null) && (message.obj != null)) {
-				textView.setText(String.valueOf(message.obj));
-			}
-		}
-	};
 
 	private BroadcastReceiver batteryReceiver;
 	private boolean isBatteryReceiverRegistered = false;
 
-	public Monitoring(View view, Context context, Activity activity, @IdRes int textViewId) {
-		this.view = view;
+	public Monitoring(Context context, Activity activity) {
 		this.context = context;
 		this.activity = activity;
-		this.textViewId = textViewId;
 		this.notification = new Notification(getContext());
 
 		PowerManager powerManager = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
@@ -70,9 +42,12 @@ public class Monitoring {
 
 	public void start() {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-		int timeout = sharedPreferences.getInt(getContext().getString(R.string.preference_key_timeLimitForMonitoring), getContext().getResources().getInteger(R.integer.preference_defaultValue_timeLimitForMonitoring));
 
-		wakeLock.acquire(timeout);
+		int decibelsForPositiveReading = sharedPreferences.getInt(getContext().getString(R.string.preference_key_decibelsForPositiveReading), getContext().getResources().getInteger(R.integer.preference_defaultValue_decibelsForPositiveReading));
+		int timeForPositiveReading = sharedPreferences.getInt(getContext().getString(R.string.preference_key_timeForPositiveReading), getContext().getResources().getInteger(R.integer.preference_defaultValue_timeForPositiveReading));
+		int timeLimitForMonitoring = sharedPreferences.getInt(getContext().getString(R.string.preference_key_timeLimitForMonitoring), getContext().getResources().getInteger(R.integer.preference_defaultValue_timeLimitForMonitoring));
+
+		wakeLock.acquire(timeLimitForMonitoring);
 
 		batteryReceiver = new BroadcastReceiver() {
 			@Override
@@ -87,21 +62,27 @@ public class Monitoring {
 		Intent monitoringServiceIntent = new Intent(getContext(), MonitoringService.class);
 
 		monitoringServiceIntent.setAction(MonitoringService.ACTION_START);
-		monitoringServiceIntent.putExtra("textViewMessenger", new Messenger(textViewHandler));
-		monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_decibelsForPositiveReading), getContext().getResources().getInteger(R.integer.preference_defaultValue_decibelsForPositiveReading));
-		monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_timeForPositiveReading), getContext().getResources().getInteger(R.integer.preference_defaultValue_timeForPositiveReading));
+		monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_decibelsForPositiveReading), decibelsForPositiveReading);
+		monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_timeForPositiveReading), timeForPositiveReading);
+		monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_timeLimitForMonitoring), timeLimitForMonitoring);
 
 		getContext().startForegroundService(monitoringServiceIntent);
 	}
 
 	public void stop() {
 		if (isForegroundServiceRunning()) {
+			SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+			int decibelsForPositiveReading = sharedPreferences.getInt(getContext().getString(R.string.preference_key_decibelsForPositiveReading), getContext().getResources().getInteger(R.integer.preference_defaultValue_decibelsForPositiveReading));
+			int timeForPositiveReading = sharedPreferences.getInt(getContext().getString(R.string.preference_key_timeForPositiveReading), getContext().getResources().getInteger(R.integer.preference_defaultValue_timeForPositiveReading));
+			int timeLimitForMonitoring = sharedPreferences.getInt(getContext().getString(R.string.preference_key_timeLimitForMonitoring), getContext().getResources().getInteger(R.integer.preference_defaultValue_timeLimitForMonitoring));
+
 			Intent monitoringServiceIntent = new Intent(getContext(), MonitoringService.class);
 
 			monitoringServiceIntent.setAction(MonitoringService.ACTION_STOP);
-			monitoringServiceIntent.putExtra("textViewMessenger", new Messenger(textViewHandler));
-			monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_decibelsForPositiveReading), getContext().getResources().getInteger(R.integer.preference_defaultValue_decibelsForPositiveReading));
-			monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_timeForPositiveReading), getContext().getResources().getInteger(R.integer.preference_defaultValue_timeForPositiveReading));
+			monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_decibelsForPositiveReading), decibelsForPositiveReading);
+			monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_timeForPositiveReading), timeForPositiveReading);
+			monitoringServiceIntent.putExtra(getContext().getString(R.string.preference_key_timeLimitForMonitoring), timeLimitForMonitoring);
 
 			getContext().startForegroundService(monitoringServiceIntent);
 		}
@@ -116,7 +97,7 @@ public class Monitoring {
 		}
 	}
 
-	private boolean isForegroundServiceRunning() {
+	public boolean isForegroundServiceRunning() {
 		ActivityManager activityManager = (ActivityManager) getContext().getSystemService(Context.ACTIVITY_SERVICE);
 
 		for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {

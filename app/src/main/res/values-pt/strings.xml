@@ -8,8 +8,6 @@
 	<!-- Pending to review -->
 	<string name="tglMonitoringOn">Desativar Monitoramento</string>
 	<string name="tglMonitoringOff">Ativar Monitoramento</string>
-	<string name="lblDecibelMessage">%1$s dB</string>
-	<string name="temporaryMessageForDemonstrationPurposes">Leitura positiva</string>
 	<string name="title_activity_main">MainActivity</string>
 	<string name="menu_home">Início</string>
 	<string name="menu_settings">Configurações</string>
